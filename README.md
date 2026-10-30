@@ -4,7 +4,7 @@ A proxy gateway that sits between an application and an LLM provider,
 recognizes semantically similar requests, and reuses cached responses
 instead of re-calling the LLM for every request — reducing cost and
 latency while guarding against unsafe cache reuse.
-83445d1dd09bb21ea28f2a164995eaebd09255470b6dc6255a2115f173e59063
+
 ## Architecture
 
 ```
