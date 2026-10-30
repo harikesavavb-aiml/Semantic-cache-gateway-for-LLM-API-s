@@ -1,0 +1,7 @@
+{
+  "default":         {"auto_hit": 0.93, "borderline_low": 0.70, "ttl": 3600,  "cache_allowed": true},
+  "faq":             {"auto_hit": 0.90, "borderline_low": 0.65, "ttl": 86400, "cache_allowed": true},
+  "user_specific":   {"auto_hit": 0.99, "borderline_low": 0.99, "ttl": 60,    "cache_allowed": false},
+  "current_events":  {"auto_hit": 0.97, "borderline_low": 0.85, "ttl": 300,   "cache_allowed": true},
+  "legal_sensitive": {"auto_hit": 0.97, "borderline_low": 0.85, "ttl": 1800,  "cache_allowed": true}
+}

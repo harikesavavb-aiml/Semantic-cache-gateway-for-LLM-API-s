@@ -1,0 +1,46 @@
+services:
+  redis:
+    image: redis:7-alpine
+    # Cache entries all carry a TTL, so volatile-ttl evicts only cache data when
+    # memory is full and never the (TTL-less) metrics counters.
+    command: >
+      redis-server --appendonly yes
+      --requirepass ${REDIS_PASSWORD:?set REDIS_PASSWORD in .env}
+      --maxmemory ${REDIS_MAXMEMORY:-512mb} --maxmemory-policy volatile-ttl
+    volumes:
+      - redis_data:/data
+    # No published port: only the gateway (same compose network) can reach Redis.
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" --no-auth-warning ping | grep PONG"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    restart: unless-stopped
+
+  gateway:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    env_file: .env
+    environment:
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379/0
+      - POLICY_CONFIG_PATH=/app/config.json
+      - TENANTS_CONFIG_PATH=/run/config/tenants.json
+      - PRICING_CONFIG_PATH=/app/pricing.json
+    volumes:
+      - ./backend/tenants.json:/run/config/tenants.json:ro
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    # Scale horizontally behind a load balancer: all state (cache, index version,
+    # budgets, metrics) lives in Redis, so replicas share one picture.
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+
+volumes:
+  redis_data:
