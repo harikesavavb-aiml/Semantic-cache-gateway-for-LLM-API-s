@@ -1,4 +1,4 @@
-# Semantic Cache Gateway for LLM APIs
+# Semantic Cache Gateway- for LLM APIs
 
 A proxy gateway that sits between an application and an LLM provider,
 recognizes semantically similar requests, and reuses cached responses
